@@ -1,0 +1,11 @@
+Blink	(EmoState INSTANCE, Pointer eState) -> { INSTANCE.ES_ExpressivIsBlink(eState); }
+LeftWink	(EmoState INSTANCE, Pointer eState) -> { INSTANCE.ES_ExpressivIsLeftWink(eState); }
+RightWink	(EmoState INSTANCE, Pointer eState) -> { INSTANCE.ES_ExpressivIsRightWink(eState); }
+LookingLeft	(EmoState INSTANCE, Pointer eState) -> { INSTANCE.ES_ExpressivIsLookingLeft(eState); }
+LookingRight	(EmoState INSTANCE, Pointer eState) -> { INSTANCE.ES_ExpressivIsLookingRight(eState); }
+LookingDown	(EmoState INSTANCE, Pointer eState) -> { INSTANCE.ES_ExpressivIsLookingDown(eState); }
+LookingUp	(EmoState INSTANCE, Pointer eState) -> { INSTANCE.ES_ExpressivIsLookingUp(eState); }
+EyesOpen	(EmoState INSTANCE, Pointer eState) -> { INSTANCE.ES_ExpressivIsEyesOpen(eState); }
+Clench	(EmoState INSTANCE, Pointer eState) -> { INSTANCE.ES_ExpressivGetClenchExtent(eState); }
+Smile	(EmoState INSTANCE, Pointer eState) -> { INSTANCE.ES_ExpressivGetSmileExtent(eState); }
+EyebrowRaise	(EmoState INSTANCE, Pointer eState) -> { INSTANCE.ES_ExpressivGetEyebrowExtent(eState); }

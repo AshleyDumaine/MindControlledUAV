@@ -11,12 +11,13 @@ class Main extends Frame implements KeyListener {
 	DatagramSocket socket;
 	int seq = 1; //Send AT command with sequence number 1 will reset the counter
 	float speed = (float)0.8; //UAV movement speed
+	boolean shift = false;
 	FloatBuffer fb;
 	IntBuffer ib;
 
 	public Main(String name, String args[]) throws Exception {
 		super(name);
-		String ip = "192.168.1.1"; //IP address for the UAV WiFi connection
+		String ip = "192.168.1.1"; //IP address for the UAV WiFi connection AA
 		if (args.length >= 1) {
 			ip = args[0];
 		}
@@ -25,7 +26,7 @@ class Main extends Frame implements KeyListener {
 		if (st.countTokens() == 4) {
 			for (int i = 0; i < 4; i++) {
 				ip_bytes[i] = (byte)Integer.parseInt(st.nextToken());
-			}
+			}	
 		}
 		else {
 			System.out.println("Incorrect IP address format: " + ip);
@@ -39,7 +40,7 @@ class Main extends Frame implements KeyListener {
 		inet_addr = InetAddress.getByAddress(ip_bytes);
 		socket = new DatagramSocket();
 		socket.setSoTimeout(3000);
-		send_at_cmd("AT*CONFIG=1,\"control:altitude_max\",\"2000\""); //altitude max 2 meters
+		send_at_cmd("AT*CONFIG=1,\"control:altitude_max\",\"4000\""); //altitude max 2 meters
 		if (args.length == 2) { //Command line mode
 			send_at_cmd(args[1]);
 			System.exit(0);
@@ -83,7 +84,7 @@ class Main extends Frame implements KeyListener {
 
 	public int intOfFloat(float f) {
 		fb.put(0, f);
-		return ib.get(0);
+		return ib.get(0);//CC
 	}
 
 	//Control AR.Drone via AT commands per key code
@@ -109,7 +110,7 @@ class Main extends Frame implements KeyListener {
 			action = "Go Backward (pitch-)";
 			at_cmd = "AT*PCMD=" + (seq++) + ",1,0," + intOfFloat(speed) + ",0,0";
 			break;
-		case 'T':	//turn left (counterclockwise)
+		case 'T':	//turn left (counterclockwise) //SSASAACCCCCAAS
 			action = "Rotate Left (yaw-)";
 			at_cmd = "AT*PCMD=" + (seq++) + ",1,0,0,0," + intOfFloat(-speed);
 			break;

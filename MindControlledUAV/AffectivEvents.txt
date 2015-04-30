@@ -1,0 +1,5 @@
+Frustration	(EmoState INSTANCE, Pointer eState) -> { INSTANCE.ES_AffectivGetFrustrationScore(eState); }
+Meditation	(EmoState INSTANCE, Pointer eState) -> { INSTANCE.ES_AffectivGetMeditationScore(eState); }
+EngagementBoredom	(EmoState INSTANCE, Pointer eState) -> { INSTANCE.ES_AffectivGetEngagementBoredomScore(eState); }
+ExcitementShortTerm	(EmoState INSTANCE, Pointer eState) -> { INSTANCE.ES_AffectivGetExcitementShortTermScore(eState); }
+ExcitementLongTerm	(EmoState INSTANCE, Pointer eState) -> { INSTANCE.ES_AffectivGetExcitementLongTermScore(eState); }
