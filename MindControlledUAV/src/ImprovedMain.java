@@ -6,8 +6,6 @@ import java.util.*;
 import java.nio.*;
 import org.json.*;
 
-
-//Main class for controlling the drone with my super awesome API
 class ImprovedMain {
 	InetAddress inet_addr;
 	DatagramSocket socket;
@@ -43,10 +41,6 @@ class ImprovedMain {
 		socket = new DatagramSocket();
 		socket.setSoTimeout(3000);
 		send_at_cmd("AT*CONFIG=1,\"control:altitude_max\",\"4000\""); //altitude max 4 meters?
-		/*if (args.length == 2) { //Command line mode
-			send_at_cmd(args[1]);
-			System.exit(0);
-		}*/
 		Thread t = new Thread(new Reset());
 		t.start();
 	}
@@ -74,7 +68,6 @@ class ImprovedMain {
 			System.out.println("Dare to use the Y gyro? (y/n): ");
 			String useYGyro = inFromUser.readLine();
 
-
 			BufferedReader inFromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 			if ((useXGyro.equals("y")) || (useYGyro.equals("y"))) outToServer.writeBytes("Gyros, " + params + '\n');
 			else outToServer.writeBytes(params + '\n'); 
@@ -85,7 +78,6 @@ class ImprovedMain {
 			while ((JSONResponse = inFromServer.readLine()) != null) {
 				JSONObject obj = new JSONObject(JSONResponse);
 				//System.out.println(obj); //debug
-
 				if ((useXGyro.equals("y")) || (useYGyro.equals("y"))) {
 					JSONArray gyros = obj.getJSONObject("EmoStateData").getJSONArray("Gyros");
 					if (useXGyro.equals("y")) {
@@ -177,14 +169,14 @@ class ImprovedMain {
 		}
 		System.out.println("Speed: " + cal_speed);    	
 		System.out.println("Action: " + action);    	
-		//send_at_cmd(at_cmd); NO DON'T FLY DRONE INSIDE
+		send_at_cmd(at_cmd);
 	}
 
 	public void send_at_cmd(String at_cmd) throws Exception {
 		System.out.println("AT command: " + at_cmd);    	
 		byte[] buffer = (at_cmd + "\r").getBytes();
 		DatagramPacket packet = new DatagramPacket(buffer, buffer.length, inet_addr, 5556);
-		//socket.send(packet); NO
+		socket.send(packet);
 		//socket.receive(packet); //AR.Drone does not send back ack message (like "OK")
 		//System.out.println(new String(packet.getData(),0,packet.getLength()));   	
 	}

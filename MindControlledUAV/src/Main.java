@@ -94,48 +94,48 @@ class Main extends Frame implements KeyListener {
 		switch (keyCode) {
 		//Only max of 4 cognitive commands at a time recommended
 		//Any changes to letter meaning/action here must occur in EmoKey mapping too
-		case 'I':	//Up (lift)
+		case 'I':	//Up
 			action = "Go Up (gaz+)";
 			at_cmd = "AT*PCMD=" + (seq++) + ",1,0,0," + intOfFloat(speed) + ",0";
 			break;
-		case 'P':   //Forward (push)
+		case 'P':   //Forward
 			action = "Go Forward (pitch+)";
 			at_cmd = "AT*PCMD=" + (seq++) + ",1,0," + intOfFloat(-speed) + ",0,0";
 			break;
-		case 'D':	//Down (drop) 
+		case 'D':	//Down
 			action = "Go Down (gaz-)";
 			at_cmd = "AT*PCMD=" + (seq++) + ",1,0,0," + intOfFloat(-speed) + ",0";
 			break;
-		case 'U':   //Backward (pull)
+		case 'U':   //Backward
 			action = "Go Backward (pitch-)";
 			at_cmd = "AT*PCMD=" + (seq++) + ",1,0," + intOfFloat(speed) + ",0,0";
 			break;
-		case 'T':	//turn left (counterclockwise) //SSASAACCCCCAAS
+		case 'T':	//turn left
 			action = "Rotate Left (yaw-)";
 			at_cmd = "AT*PCMD=" + (seq++) + ",1,0,0,0," + intOfFloat(-speed);
 			break;
-		case 'L':   //Left (think left)
+		case 'L':   //Left
 			action = "Go Left (roll-)";
 			at_cmd = "AT*PCMD=" + (seq++) + ",1," + intOfFloat(-speed) + ",0,0,0";
 			break;
-		case 'C':	//turn right (clockwise)
+		case 'C':	//turn right
 			action = "Rotate Right (yaw+)";
 			at_cmd = "AT*PCMD=" + (seq++) + ",1,0,0,0," + intOfFloat(speed);
 			break;
-		case 'R':   //Right (think right)
+		case 'R':   //Right
 			action = "Go Right (roll+)";
 			at_cmd = "AT*PCMD=" + (seq++) + ",1," + intOfFloat(speed) + ",0,0,0";
 			break;
-		case 'N':	//Hover (neutral)
+		case 'N':	//Hover
 			//Not necessary but can be used to stabilize drone 
 			action = "Hovering";
 			at_cmd = "AT*PCMD=" + (seq++) + ",1,0,0,0,0";
 			break;
-		case 'S':	//Takeoff (raise brow)
+		case 'S':	//Takeoff
 			action = "Takeoff";         
 			at_cmd = "AT*REF=" + (seq++) + ",290718208";
 			break;
-		case 'A':	//Land (clench)
+		case 'A':	//Land
 			action = "Landing";
 			at_cmd = "AT*REF=" + (seq++) + ",290717696";
 			break;
