@@ -1,0 +1,5 @@
+Clench	takeoff	0.3
+RaiseBrow	land	0.8
+Push	dance_1	0.2
+GyroX	turn	0.0
+GyroY	lift	0.0
