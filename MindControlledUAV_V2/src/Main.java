@@ -52,7 +52,8 @@ public class Main implements NavDataListener {
 			BufferedReader trainingInFromServer = new BufferedReader(new InputStreamReader(clientTrainingSocket.getInputStream()));
 			outToServer.writeBytes("expressive, gyros" + '\n');
 			new Thread(() -> handleTraining(trainingInFromServer, trainingOutToServer)).start();
-
+			br = new BufferedReader(new InputStreamReader(System.in));
+		
 			// set up the drone
 			drone = new ARDrone();
 			drone.connect();
@@ -64,6 +65,17 @@ public class Main implements NavDataListener {
 
 			// start reading from the headset and controlling the drone
 			while ((JSONResponse = inFromServer.readLine()) != null) {
+				while (br.ready()) { // make drone land on hitting enter and quit
+					System.out.println("force land");
+					drone.land();
+					//close all resources
+					clientSocket.close();
+					clientTrainingSocket.close();
+					inFromServer.close();
+					outToServer.close();
+					drone.disconnect();
+					System.exit(0);
+				}
 				JSONObject obj = new JSONObject(JSONResponse);
 				// System.out.println(obj); //debug
 				boolean useXGyro = configMap.containsKey("GyroX");
@@ -108,16 +120,6 @@ public class Main implements NavDataListener {
 					}
 				}
 			}
-
-			//close all resources
-			clientSocket.close();
-			clientTrainingSocket.close();
-			inFromServer.close();
-			outToServer.close();
-			trainingOutToServer.close();
-			trainingInFromServer.close();
-			drone.disconnect();
-			System.exit(0);
 		} catch (Exception e) {
 			e.printStackTrace();
 		} 
@@ -198,8 +200,8 @@ public class Main implements NavDataListener {
 
 	public static void handleTraining(BufferedReader trainingInFromServer, DataOutputStream trainingOutToServer) {
 		String response = "";
-		InputStreamReader fileInputStream = new InputStreamReader(System.in);
-		BufferedReader br = new BufferedReader(fileInputStream);
+		//InputStreamReader fileInputStream = new InputStreamReader(System.in);
+		//BufferedReader br = new BufferedReader(fileInputStream);
 		while(true) {
 			try {
 				while (trainingInFromServer.ready()) {
@@ -209,9 +211,9 @@ public class Main implements NavDataListener {
 						trainingOutToServer.writeBytes("Ashley\n");
 					}
 				}
-				while (br.ready()){
+				/*while (br.ready()){
 					trainingOutToServer.writeBytes(br.readLine() + '\n');
-				}
+				}*/
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
