@@ -5,8 +5,6 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 import java.util.HashMap;
 
-import javax.swing.JPanel;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -17,9 +15,6 @@ import com.codeminders.ardrone.NavDataListener;
 public class Main implements NavDataListener {
 	static ARDrone drone;
 	double phi, theta, gaz, psi;
-	byte[] bbuf = new byte[320*240*3];
-	int width, height;
-	JPanel jPanel;
 
 	public static void main(String args[]) {
 		Main self = new Main();
@@ -28,8 +23,8 @@ public class Main implements NavDataListener {
 
 	public void run() {
 		//run API_Main for the EPOC server socket
-		//Thread t = new Thread(new API_Main());
-		//t.start();
+		Thread t = new Thread(new API_Main());
+		t.start();
 		String JSONResponse;
 		String line = "";
 		HashMap<String, String[]> configMap = new HashMap<String, String[]>();
@@ -55,6 +50,8 @@ public class Main implements NavDataListener {
 			BufferedReader inFromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 			DataOutputStream trainingOutToServer = new DataOutputStream(clientTrainingSocket.getOutputStream());
 			BufferedReader trainingInFromServer = new BufferedReader(new InputStreamReader(clientTrainingSocket.getInputStream()));
+			outToServer.writeBytes("expressive, gyros" + '\n');
+			new Thread(() -> handleTraining(trainingInFromServer, trainingOutToServer)).start();
 
 			// set up the drone
 			drone = new ARDrone();
@@ -91,9 +88,11 @@ public class Main implements NavDataListener {
 								obj.getJSONObject("EmoStateData").getJSONArray("Affectiv") : 
 									obj.getJSONObject("EmoStateData").getJSONArray("Expressiv");
 								for (int i = 0; i < array.length(); i++) {
-									float param_val = (float) array.getJSONObject(i).getDouble(token);
-									if (param_val > Integer.parseInt(configMap.get(token)[1])) {
-										control(configMap.get(token)[0], param_val);
+									if (array.getJSONObject(i).has(token)) {
+										float param_val = (float) array.getJSONObject(i).getDouble(token);
+										if (param_val > Integer.parseInt(configMap.get(token)[1])) {
+											control(configMap.get(token)[0], param_val);
+										}
 									}
 								}
 					}
@@ -109,7 +108,7 @@ public class Main implements NavDataListener {
 					}
 				}
 			}
-			
+
 			//close all resources
 			clientSocket.close();
 			clientTrainingSocket.close();
@@ -125,6 +124,7 @@ public class Main implements NavDataListener {
 	}
 
 	public static void control(String command, float val) throws Exception {
+		System.out.println(command + " " + val);
 		switch (command) {
 
 		// critical commands
@@ -194,5 +194,27 @@ public class Main implements NavDataListener {
 		theta = nd.getPitch();
 		gaz = nd.getAltitude();
 		psi = nd.getYaw();		
+	}
+
+	public static void handleTraining(BufferedReader trainingInFromServer, DataOutputStream trainingOutToServer) {
+		String response = "";
+		InputStreamReader fileInputStream = new InputStreamReader(System.in);
+		BufferedReader br = new BufferedReader(fileInputStream);
+		while(true) {
+			try {
+				while (trainingInFromServer.ready()) {
+					response = trainingInFromServer.readLine();
+					System.out.println(response);
+					if (response.contains("Enter username:")) {
+						trainingOutToServer.writeBytes("Ashley\n");
+					}
+				}
+				while (br.ready()){
+					trainingOutToServer.writeBytes(br.readLine() + '\n');
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 }

@@ -355,13 +355,13 @@ public class ARDrone
             cmd_sending_thread = new Thread(cmd_sender);
             cmd_sending_thread.setName("Command Sender");
             cmd_sending_thread.start();
-            
+            /*
             log.info("Enabling video");
             enableVideo();
 
             log.info("Enabling automatic video bitrate");
             enableAutomaticVideoBitrate();
-
+			*/
             log.info("Configuring NavDataDecoder");
             NavDataDecoder nav_data_decoder = (null == ext_nav_data_decoder) ?
                     new  ARDrone10NavDataDecoder(this, NAVDATA_BUFFER_SIZE)
@@ -376,7 +376,7 @@ public class ARDrone
                     
             log.info("Setting up ChannelProcessor");
             drone_nav_channel_processor = new ChannelProcessor(nav_data_reader, nav_data_decoder);
-            
+            /*
             log.info("Setting up VideoDataDecoder");
             VideoDataDecoder video_data_decoder = (null == ext_video_data_decoder) ? 
                     getVideoDecoder(version)
@@ -398,7 +398,7 @@ public class ARDrone
                 log.info("Setting up video channel processor with reader and decoder");
                 drone_video_channel_processor = new ChannelProcessor(video_data_reader, video_data_decoder);
             }
-
+			*/
             log.info("Changing state to CONNECTING");
             changeState(State.CONNECTING);
 
