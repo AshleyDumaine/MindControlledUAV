@@ -94,6 +94,30 @@ class Main extends Frame implements KeyListener {
 		switch (keyCode) {
 		//Only max of 4 cognitive commands at a time recommended
 		//Any changes to letter meaning/action here must occur in EmoKey mapping too
+		case 'W':	//Wave -- bring it AROUND TOWN!
+			action = "Wave";
+			at_cmd = "AT*CONFIG=1,\"control:flight_anim\",\"13,5000\"";
+			break;
+		case 'Y':	//Yaw dance -- like shaking head
+			action = "Yaw dance";
+			at_cmd = "AT*CONFIG=1,\"control:flight_anim\",\"9,5000\"";
+			break;
+		case 'G':	//phi dance -- tilt side to side
+			action = "phi dance ";
+			at_cmd = "AT*CONFIG=1,\"control:flight_anim\",\"10,5000\"";
+			break;
+		case 'F':	//theta dance -- forward and backward
+			action = "theta dance ";
+			at_cmd = "AT*CONFIG=1,\"control:flight_anim\",\"11,5000\"";
+			break;
+		case 'K':	// forward and backward and side to side
+			action = "dance";
+			at_cmd = "AT*CONFIG=1,\"control:flight_anim\",\"14,5000\"";
+			break;
+		case 'J':	// forward and backward and side to side double
+			action = "dance";
+			at_cmd = "AT*CONFIG=1,\"control:flight_anim\",\"15,5000\"";
+			break;
 		case 'I':	//Up
 			action = "Go Up (gaz+)";
 			at_cmd = "AT*PCMD=" + (seq++) + ",1,0,0," + intOfFloat(speed) + ",0";
