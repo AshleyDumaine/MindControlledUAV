@@ -100,7 +100,7 @@ public class Main implements NavDataListener {
 								obj.getJSONObject("EmoStateData").getJSONArray("Affectiv") : 
 									obj.getJSONObject("EmoStateData").getJSONArray("Expressiv");
 								for (int i = 0; i < array.length(); i++) {
-									if (array.getJSONObject(i).has(token)) {
+									if (array.optJSONObject(i).has(token)) {
 										float param_val = (float) array.getJSONObject(i).getDouble(token);
 										if (param_val > Integer.parseInt(configMap.get(token)[1])) {
 											control(configMap.get(token)[0], param_val);
