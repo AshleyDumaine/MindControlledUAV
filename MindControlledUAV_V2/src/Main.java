@@ -161,30 +161,63 @@ public class Main implements NavDataListener {
 			break;
 
 			// tricks
-		case "dance_1":
-			drone.playAnimation(ARDrone.Animation.YAW_DANCE, 5);
+			/* NOTE: For the A.R. Drone 2.0 these NEED to be sent as a CONFIG command
+			 * with control:flight_anim and NOT an ANIM command like the ones commented out. 
+			 * It should look like the following:
+			 * AT*CONFIG=1,"control:flight_anim","3,1000"
+			 * where 3 is the animation number and 1000 is the duration in msecs
+			 */
+		case "yaw_dance": // like shaking head
+			//drone.playAnimation(ARDrone.Animation.YAW_DANCE, 5);
+			drone.setConfigOption("control:flight_anim", 
+					ARDrone.Animation.YAW_DANCE + ",5000");
 			break;
-		case "dance_2":
-			drone.playAnimation(ARDrone.Animation.PHI_DANCE, 5);
+		case "phi_dance": // tilt side to side
+			//drone.playAnimation(ARDrone.Animation.PHI_DANCE, 5);
+			drone.setConfigOption("control:flight_anim", 
+					ARDrone.Animation.PHI_DANCE + ",5000");
 			break;
-		case "dance_3":
-			drone.playAnimation(ARDrone.Animation.THETA_DANCE, 5);
+		case "theta_dance": // forward and backward
+			//drone.playAnimation(ARDrone.Animation.THETA_DANCE, 5);
+			drone.setConfigOption("control:flight_anim", 
+					ARDrone.Animation.THETA_DANCE + ",5000");
 			break;
-		case "dance_4":
-			drone.playAnimation(ARDrone.Animation.VZ_DANCE, 5);
+		case "vz_dance": // doesn't seem to do anything... 
+			//drone.playAnimation(ARDrone.Animation.VZ_DANCE, 5);
+			drone.setConfigOption("control:flight_anim", 
+					ARDrone.Animation.VZ_DANCE +",5000");
 			break;
-		case "mayday":
-			drone.playAnimation(ARDrone.Animation.VZ_DANCE, 5);
+		case "combo_dance": // dances forward and backward and side to side
+			//drone.playAnimation(ARDrone.Animation.PHI_THETA_MIXED, 5);
+			drone.setConfigOption("control:flight_anim", 
+					ARDrone.Animation.PHI_THETA_MIXED + ",5000");
 			break;
-		case "wave":
-			drone.playAnimation(ARDrone.Animation.WAVE, 5);
+		case "double_combo_dance":
+			//drone.playAnimation(ARDrone.Animation.PHI_THETA_MIXED, 5);
+			drone.setConfigOption("control:flight_anim", 
+					ARDrone.Animation.PHI_THETA_MIXED + ",5000");
 			break;
-		case "shake":
-			drone.playAnimation(ARDrone.Animation.YAW_SHAKE, 5);
+		case "wave": // looks more like it's flying in a tornado
+			//drone.playAnimation(ARDrone.Animation.WAVE, 5);
+			drone.setConfigOption("control:flight_anim", 
+					ARDrone.Animation.WAVE + ",5000");
+			break;
+		case "yaw_shake":
+			//drone.playAnimation(ARDrone.Animation.YAW_SHAKE, 5);
+			drone.setConfigOption("control:flight_anim", 
+					ARDrone.Animation.YAW_SHAKE + ",5000");
 			break;
 		case "180":
-			drone.playAnimation(ARDrone.Animation.TURNAROUND, 5);
+			//drone.playAnimation(ARDrone.Animation.TURNAROUND, 5);
+			drone.setConfigOption("control:flight_anim", 
+					ARDrone.Animation.TURNAROUND + ",5000");
 			break;
+		case "mayday": // probably crashes the drone dramatically... must test this
+			//drone.playAnimation(ARDrone.Animation.ANIM_MAYDAY, 5);
+			drone.setConfigOption("control:flight_anim", 
+					ARDrone.Animation.ANIM_MAYDAY + ",5000");
+			break;
+		// TODO: find the flip command
 		default:
 			break;
 		}
