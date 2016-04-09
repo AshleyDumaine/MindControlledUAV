@@ -40,7 +40,7 @@ class Main extends Frame implements KeyListener {
 		inet_addr = InetAddress.getByAddress(ip_bytes);
 		socket = new DatagramSocket();
 		socket.setSoTimeout(3000);
-		send_at_cmd("AT*CONFIG=1,\"control:altitude_max\",\"4000\""); //altitude max 2 meters
+		send_at_cmd("AT*CONFIG=1,\"control:altitude_max\",\"3000\""); //altitude max 3 meters
 		if (args.length == 2) { //Command line mode
 			send_at_cmd(args[1]);
 			System.exit(0);
@@ -94,6 +94,8 @@ class Main extends Frame implements KeyListener {
 		switch (keyCode) {
 		//Only max of 4 cognitive commands at a time recommended
 		//Any changes to letter meaning/action here must occur in EmoKey mapping too
+		
+		// what we actually care about
 		case 'W':	//Wave -- bring it AROUND TOWN!
 			action = "Wave";
 			at_cmd = "AT*CONFIG=1,\"control:flight_anim\",\"13,5000\"";
@@ -115,9 +117,11 @@ class Main extends Frame implements KeyListener {
 			at_cmd = "AT*CONFIG=1,\"control:flight_anim\",\"14,5000\"";
 			break;
 		case 'J':	// forward and backward and side to side double
-			action = "dance";
+			action = "2x dance";
 			at_cmd = "AT*CONFIG=1,\"control:flight_anim\",\"15,5000\"";
 			break;
+			
+		
 		case 'I':	//Up
 			action = "Go Up (gaz+)";
 			at_cmd = "AT*PCMD=" + (seq++) + ",1,0,0," + intOfFloat(speed) + ",0";
