@@ -3,6 +3,9 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 import java.util.HashMap;
 
 import org.json.JSONArray;
@@ -12,9 +15,26 @@ import com.codeminders.ardrone.ARDrone;
 import com.codeminders.ardrone.NavData;
 import com.codeminders.ardrone.NavDataListener;
 
+/* WARNING: Good old EMOTIV never felt like adding cognitive
+ * training and detection support to their OSX libraries so 
+ * that WILL NOT work here. Trying to control the drone with
+ * mental commands for this setup WILL NOT work unless 
+ * (theoretically) this is run from Windows or Linux. Windows
+ * throws a fit for some reason claiming it can't find the main
+ * method even when it's in Main.java right in the damn src 
+ * folder. Windows is for paste-eaters anyway.
+ * 
+ * Try running the ugly Main.java from the original 
+ * MindControlledUAV concurrently with this and EmoKey to
+ * still be able to actually call this a mind-controlled
+ * drone demo. This will take care of everything that doesn't
+ * deal with controlling it via cognitive commands.
+ */
 public class Main implements NavDataListener {
 	static ARDrone drone;
 	double phi, theta, gaz, psi;
+	FloatBuffer fb;
+	IntBuffer ib;
 
 	public static void main(String args[]) {
 		Main self = new Main();
@@ -25,6 +45,9 @@ public class Main implements NavDataListener {
 		//run API_Main for the EPOC server socket
 		Thread t = new Thread(new API_Main());
 		t.start();
+		ByteBuffer bb = ByteBuffer.allocate(4);
+		fb = bb.asFloatBuffer();
+		ib = bb.asIntBuffer();
 		String JSONResponse;
 		String line = "";
 		HashMap<String, String[]> configMap = new HashMap<String, String[]>();
@@ -65,7 +88,9 @@ public class Main implements NavDataListener {
 
 			// start reading from the headset and controlling the drone
 			while ((JSONResponse = inFromServer.readLine()) != null) {
-				while (br.ready()) { // make drone land on hitting enter and quit
+				// make drone land on hitting enter and quit
+				// with a non-blocking while loop
+				while (br.ready()) { 
 					System.out.println("force land");
 					drone.land();
 					//close all resources
@@ -77,19 +102,19 @@ public class Main implements NavDataListener {
 					System.exit(0);
 				}
 				JSONObject obj = new JSONObject(JSONResponse);
-				// System.out.println(obj); //debug
+				//System.out.println(obj); //debug
 				boolean useXGyro = configMap.containsKey("GyroX");
 				boolean useYGyro = configMap.containsKey("GyroY");
 				if (useXGyro || useYGyro) {
-					JSONArray gyros = obj.getJSONObject("EmoStateData").getJSONArray("Gyros");
+					JSONObject gyros = obj.getJSONObject("EmoStateData").getJSONObject("Gyros");
 					if (useXGyro) {
-						float Xgyro_val = (float) gyros.getJSONObject(0).getDouble("GyroX");
-						System.out.println(Xgyro_val);
+						float Xgyro_val = (float) gyros.getDouble("GyroX");
+						//System.out.println(Xgyro_val);
 						if (Xgyro_val != 0) control(configMap.get("GyroX")[0], Xgyro_val);
 					}
 					if (useYGyro) {
-						float Ygyro_val = (float) gyros.getJSONObject(1).getDouble("GyroY");
-						System.out.println(Ygyro_val);
+						float Ygyro_val = (float) gyros.getDouble("GyroY");
+						//System.out.println(Ygyro_val);
 						if (Ygyro_val != 0) control(configMap.get("GyroY")[0], Ygyro_val);
 					}
 				}
@@ -97,8 +122,8 @@ public class Main implements NavDataListener {
 					//for expressiv and affectiv events, which are contained in JSONArrays
 					if (API_Main.getAffectivMap().containsKey(token) || API_Main.getExpressivMap().containsKey(token)){
 						JSONArray array = (API_Main.getAffectivMap().containsKey(token)) ? 
-								obj.getJSONObject("EmoStateData").getJSONArray("Affectiv") : 
-									obj.getJSONObject("EmoStateData").getJSONArray("Expressiv");
+								obj.getJSONObject("EmoStateData").getJSONArray("Affective") : 
+									obj.getJSONObject("EmoStateData").getJSONArray("Expressive");
 								for (int i = 0; i < array.length(); i++) {
 									if (array.optJSONObject(i).has(token)) {
 										float param_val = (float) array.getJSONObject(i).getDouble(token);
@@ -110,9 +135,9 @@ public class Main implements NavDataListener {
 					}
 					//for cognitiv events, which are contained in a JSONObject
 					else if (API_Main.getCogntivMap().containsKey(token)) {
-						String cog_action = obj.getJSONObject("EmoStateData").getString("Cognitiv");
+						String cog_action = obj.getJSONObject("EmoStateData").getString("Cognitive");
 						if (cog_action.equals(token)) {
-							float param_val = (float) obj.getJSONObject("EmoStateData").getDouble("Cognitiv");
+							float param_val = (float) obj.getJSONObject("EmoStateData").getDouble("Cognitive");
 							if (param_val > Integer.parseInt(configMap.get(token)[1])) {
 								control(configMap.get(token)[0], param_val);
 							}
@@ -124,9 +149,15 @@ public class Main implements NavDataListener {
 			e.printStackTrace();
 		} 
 	}
+	
+	public int intOfFloat(float f) {
+		fb.put(0, f);
+		return ib.get(0);
+	}
 
-	public static void control(String command, float val) throws Exception {
+	public void control(String command, float val) throws Exception {
 		System.out.println(command + " " + val);
+		float cal_speed = 0.0f;
 		switch (command) {
 
 		// critical commands
@@ -154,10 +185,30 @@ public class Main implements NavDataListener {
 			drone.move(val, 0, 0, 0); // positive val to go right
 			break;
 		case "turn":
-			drone.move(0,0, 0, val); // positive val to spin right, negative to spin left
+			//lets try gyro magnitude to control speed, use 500 as the max and floor if any head jerks occur
+			if ((Math.abs(val)) > 300) {
+				cal_speed = 1.0f;
+				System.out.println(cal_speed);
+				drone.move(0,0, 0, intOfFloat(cal_speed)); // positive val to spin right, negative to spin left
+			}
+			else if ((Math.abs(val)) > 20) {
+				cal_speed = (float) Math.round(val / 300.0 * 100) / 100; //will be negative for left
+				System.out.println(cal_speed);
+				drone.move(0,0, 0, intOfFloat(cal_speed)); // positive val to spin right, negative to spin left
+			}			
 			break;
 		case "lift":
-			drone.move(0,0, val, 0); // positive val to go up, negative to go down
+			//lets try gyro magnitude to control speed, use 500 as the max and floor if any head jerks occur
+			if ((Math.abs(val)) > 300) {
+				cal_speed = 1.0f;
+				System.out.println(cal_speed);
+				drone.move(0,0, intOfFloat(cal_speed), 0); // positive val to go up, negative to go down
+			}
+			else if ((Math.abs(val)) > 20) {
+				cal_speed = (float) Math.round(val / 300.0 * 100) / 100; //will be negative for left
+				System.out.println(cal_speed);
+				drone.move(0,0, intOfFloat(cal_speed), 0); // positive val to go up, negative to go down
+			}
 			break;
 
 			// tricks

@@ -1,5 +1,6 @@
-Clench	takeoff	0.3
-RaiseBrow	land	0.8
-Push	dance_1	0.2
+Clench	land	0.3
+RaiseBrow	takeoff	0.8
+Push	combo_dance	0.2
+Pull	wave	0.2
 GyroX	turn	0.0
 GyroY	lift	0.0

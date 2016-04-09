@@ -11,7 +11,7 @@ public abstract class NavDataDecoder extends DataDecoder {
     }
 
     public void notifyDroneWithDecodedNavdata(NavData navdata) {
-       drone.navDataReceived(navdata);
+       //drone.navDataReceived(navdata);
     }
 
 }
