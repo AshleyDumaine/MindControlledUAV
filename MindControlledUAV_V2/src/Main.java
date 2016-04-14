@@ -102,7 +102,7 @@ public class Main implements NavDataListener {
 					System.exit(0);
 				}
 				JSONObject obj = new JSONObject(JSONResponse);
-				//System.out.println(obj); //debug
+				System.out.println(obj); //debug
 				boolean useXGyro = configMap.containsKey("GyroX");
 				boolean useYGyro = configMap.containsKey("GyroY");
 				if (useXGyro || useYGyro) {
@@ -127,7 +127,7 @@ public class Main implements NavDataListener {
 								for (int i = 0; i < array.length(); i++) {
 									if (array.optJSONObject(i).has(token)) {
 										float param_val = (float) array.getJSONObject(i).getDouble(token);
-										if (param_val > Integer.parseInt(configMap.get(token)[1])) {
+										if (param_val > Double.parseDouble(configMap.get(token)[1])) {
 											control(configMap.get(token)[0], param_val);
 										}
 									}
@@ -138,7 +138,7 @@ public class Main implements NavDataListener {
 						String cog_action = obj.getJSONObject("EmoStateData").getString("Cognitive");
 						if (cog_action.equals(token)) {
 							float param_val = (float) obj.getJSONObject("EmoStateData").getDouble("Cognitive");
-							if (param_val > Integer.parseInt(configMap.get(token)[1])) {
+							if (param_val > Double.parseDouble(configMap.get(token)[1])) {
 								control(configMap.get(token)[0], param_val);
 							}
 						}
